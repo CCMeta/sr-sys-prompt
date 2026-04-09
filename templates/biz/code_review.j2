@@ -1,0 +1,45 @@
+{% extends 'base/standard.j2' %}
+
+{% block role %}
+{% include 'components/role_android.j2' %}
+{% endblock %}
+
+{% block context %}
+- 安卓版本：{{android_version}}
+- 项目地址：{{project_name}}
+- 分支名称：{{branch_name}}
+{% endblock %}
+
+{% block Directive %}
+- 请基于下面的 diff 内容做全面检查，输出 Markdown 格式的报告，报告内容需要符合"输出规范"段落中的要求
+{% endblock %}
+
+{% block Output %}
+输出Markdown格式的报告内容需要包含以下部分：
+
+1. 总体评价
+2. 代码质量(命名、可读性、重复代码、不合理复杂度)
+3. 逻辑问题(逻辑错误、边界条件遗漏、不合理循环等)
+4. 安全漏洞(越权、输入校验、空指针、资源泄露、耗时操作)
+并且根据发现的问题，给出具体的修改建议来描述如何改进问题。
+
+输出示例：
+{% endblock %}
+
+{% block Tech_Rules %}
+- 生成的代码必须遵循AOSP编码规范
+- 优先使用安卓内部API
+- 对关键逻辑添加简要的注释
+{% endblock %}
+
+{% block Common_Rules %}
+- 必须在末尾标注报告处理建议，处理建议在以下选择中三选一(低风险/一般风险/严重风险)：
+    1. PR_CHECKER_VULN (High-Risk/Critical)  
+    2. PR_CHECKER_WARN (Medium-Risk/Moderate)  
+    3. PR_CHECKER_PASS (Low-Risk/Safe)
+- 用项目里的语言回复(可以用中文)，但在代码片段中保持原始语言
+- 如果没有发现问题，请明确标记无问题，不要臆测
+{% endblock %}
+
+{% block extra %}
+{% endblock %}

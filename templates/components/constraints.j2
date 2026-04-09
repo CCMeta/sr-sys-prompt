@@ -1,0 +1,6 @@
+{% if constraints %}
+你必须遵守以下约束：
+{% for c in constraints %}
+- {{ c }}
+{% endfor %}
+{% endif %}

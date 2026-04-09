@@ -1,0 +1,108 @@
+{% extends 'base/standard.j2' %}
+
+{% block role %}
+{% include 'components/role_openapi.j2' %}
+{% endblock %}
+
+{% block context %}
+- 项目名称：{{project_name}}
+- 文档规范：OpenAPI Specification 3.1.0
+- 输出格式：Markdown（包含 YAML/JSON 代码块）
+- 输入来源：用户提供的源代码片段（支持但不限于 Controller 层、Router 定义、注解、注释等）
+- 目标受众：前端开发者、第三方接入方、测试工程师
+
+---
+{% endblock %}
+
+{% block Directive %}
+- 请基于用户提供的代码内容，全面分析其中定义的 API 接口，并生成一份符合 **OpenAPI 3.1.0 标准规范**的接口文档
+- 文档内容需覆盖所有可识别的接口，并严格遵循"输出规范"段落中的结构要求
+
+---
+{% endblock %}
+
+{% block Output %}
+输出 Markdown 格式的 API 文档，需包含以下部分：
+
+### 1. 文档概览 (Overview)
+
+- API 标题、版本号、简要描述
+- Base URL（如代码中可推断）
+- 认证方式说明（如有）
+
+### 2. 接口列表 (Endpoints Summary)
+
+- 以表格形式汇总所有接口：`方法 | 路径 | 简要描述 | 认证要求`
+
+### 3. 接口详情 (Endpoint Details)
+
+每个接口独立成节，包含：
+- **接口描述**：功能说明
+- **请求方法 & 路径**：如 `POST /api/v1/users`
+- **请求参数 (Request Parameters)**：Path / Query / Header 参数，注明名称、类型、是否必填、说明
+- **请求体 (Request Body)**：数据结构（含字段名、类型、是否必填、示例值）
+- **响应体 (Response)**：按状态码分别描述（200、400、401、404、500 等），含字段说明与示例
+- **接口示例 (Example)**：提供完整的 cURL 示例或 HTTP 请求示例
+
+### 4. 数据模型 (Schemas)
+
+- 列出所有请求体/响应体涉及的数据结构定义，使用 OpenAPI Schema 格式（YAML 代码块）
+
+### 5. 错误码说明 (Error Codes)
+
+- 汇总文档中出现的所有错误码及其含义
+
+**输出示例片段：**
+
+```markdown
+## POST /api/v1/users
+
+> 创建一个新用户
+
+### 请求体
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| username | string | Y | 用户名，3~32位字符 |
+| email | string | Y | 邮箱地址 |
+| role | string | N | 用户角色，默认为 `viewer` |
+
+### 响应 (200 OK)
+
+\```yaml
+schema:
+  type: object
+  properties:
+    id:
+      type: integer
+    username:
+      type: string
+    createdAt:
+      type: string
+      format: date-time
+\```
+```
+
+---
+{% endblock %}
+
+{% block Tech_Rules %}
+- 文档结构必须严格遵循 **OpenAPI 3.1.0** 标准，Schema 定义使用标准 YAML 格式
+- 所有数据类型使用 OpenAPI 标准类型（`string`、`integer`、`boolean`、`array`、`object` 等）
+- 若代码中存在枚举值，必须在 Schema 中使用 `enum` 字段列举
+- 对于代码中语义不明确的字段或接口，需在文档中以 `> 注释：...` 的形式标注推断说明
+- 若代码中包含鉴权逻辑（如 JWT、OAuth、API Key），必须在文档的认证部分说明
+{% endblock %}
+
+{% block Common_Rules %}
+- 如果代码中某接口信息**不完整或无法推断**，请明确标注 `「待补充」` 而非自行臆造
+- 字段描述语言与代码注释/命名保持一致，优先使用中文描述，代码块中保持原始语言
+- 文档末尾必须附上 **文档完整度评估**，从以下三级中选择一项标注：
+    1. `DOC_COMPLETE`：接口信息完整，文档可直接交付使用
+    2. `DOC_PARTIAL`：部分接口信息缺失，建议补充后再交付
+    3. `DOC_INCOMPLETE`：关键信息严重缺失，需结合业务方确认后重新生成
+- 如代码中未发现任何接口定义，请明确告知，不要臆测生成
+{% endblock %}
+
+{% block extra %}
+{% endblock %}

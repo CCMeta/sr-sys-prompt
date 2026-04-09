@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>提示词模板测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, "Microsoft YaHei", sans-serif;
+            background: #0f1117;
+            color: #e0e0e0;
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: #fff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 24px;
+        }
+
+        /* ---- 左栏：表单 ---- */
+        .panel {
+            background: #1a1d27;
+            border: 1px solid #2a2d3a;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .panel h2 {
+            font-size: 15px;
+            color: #888;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 4px;
+            margin-top: 12px;
+        }
+
+        label:first-of-type {
+            margin-top: 0;
+        }
+
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #12141c;
+            border: 1px solid #2a2d3a;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: #5b6ef5;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .var-list {
+            margin-top: 16px;
+        }
+
+        .var-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .var-item input:first-child {
+            /* flex: 2; */
+        }
+
+        .var-item input:last-child {
+            /* flex: 3; */
+        }
+
+        .btn-row {
+            margin-top: 8px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-add {
+            background: transparent;
+            color: #5b6ef5;
+            border: 1px dashed #5b6ef5;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .btn-add:hover {
+            background: #5b6ef520;
+        }
+
+        .btn-remove {
+            background: transparent;
+            color: #f55b5b;
+            font-size: 18px;
+            padding: 4px 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-render {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #5b6ef5, #8b5cf6);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        .btn-render:hover {
+            opacity: 0.9;
+        }
+
+        .btn-render:active {
+            transform: scale(0.98);
+        }
+
+        /* ---- 右栏：结果 ---- */
+        .result-box {
+            position: relative;
+        }
+
+        #status {
+            font-size: 13px;
+            margin-bottom: 12px;
+            min-height: 20px;
+        }
+
+        .ok {
+            color: #4ade80;
+        }
+
+        .err {
+            color: #f87171;
+        }
+
+        #output {
+            width: 100%;
+            min-height: 500px;
+            padding: 20px;
+            background: #12141c;
+            border: 1px solid #2a2d3a;
+            border-radius: 10px;
+            color: #d4d4d8;
+            font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-y: auto;
+        }
+
+        .btn-copy {
+            position: absolute;
+            top: 38px;
+            right: 12px;
+            background:  linear-gradient(135deg, #5b6ef5, #8b5cf6);
+            color: #FFF;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+
+        .btn-copy:hover {
+            background: #3a3d4a;
+            color: #fff;
+        }
+
+        /* ---- 预设 ---- */
+        .presets {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            background: #2a2d3a;
+            color: #ccc;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 20px;
+        }
+
+        .preset-btn:hover {
+            background: #3a3d5a;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>提示词模板引擎测试</h1>
+
+    <div class="layout">
+        <!-- ========== 左栏 ========== -->
+        <div class="panel">
+            <h2>请求参数</h2>
+
+            <div class="presets">
+                <button class="preset-btn" onclick="loadPreset('code_review')">代码审查</button>
+                <button class="preset-btn" onclick="loadPreset('code_openapi')">API文档生成</button>
+                <button class="preset-btn" onclick="loadPreset('empty')">【模板解说】</button>
+            </div>
+
+            <label>后台地址</label>
+            <input id="apiUrl" value="/prompts/biz/" />
+
+            <label>业务场景 (scene)</label>
+            <input id="scene" placeholder="code_review" />
+
+            <label>用户变量 (variables)</label>
+            <div id="varList" class="var-list"></div>
+            <button class="btn-add" onclick="addVar('', '')">添加变量</button>
+
+            <button class="btn-render" onclick="doRender()">开始渲染</button>
+        </div>
+
+        <!-- ========== 右栏 ========== -->
+        <div class="panel result-box">
+            <span>渲染结果</span>
+            <div id="status"></div>
+            <div id="output"></div>
+            <button class="btn-copy" onclick="copyResult()">复制结果</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  预设数据
+        // ============================================================
+        const PRESETS = {
+            code_review: {
+                scene: "code_review",
+                variables: {
+                    project_name: "SPRD_B/SPRDROID16_SYS_MAIN_W25.22.4",
+                    android_version: "Android API 36",
+                    branch_name: "dev_Common_UI_A16",
+                },
+            },
+            code_openapi: {
+                scene: "code_openapi",
+                variables: {
+                    project_name: "CM52-MIFI-DEV-TPG-COMMON",
+                },
+            },
+            empty: {
+                scene: "empty",
+                variables: {},
+            },
+        };
+
+        // ============================================================
+        //  变量行管理
+        // ============================================================
+        function addVar(key, value) {
+            const list = document.getElementById("varList");
+            const row = document.createElement("div");
+            row.className = "var-item";
+            row.innerHTML = `
+        <input placeholder="变量名" value="${key}" />
+        <input placeholder="值" value="${value}" />
+        <button class="btn-remove" onclick="this.parentElement.remove()">×</button>
+    `;
+            list.appendChild(row);
+        }
+
+        function setVars(vars) {
+            document.getElementById("varList").innerHTML = "";
+            for (const [k, v] of Object.entries(vars)) {
+                addVar(k, v);
+            }
+        }
+
+        function getVars() {
+            const vars = {};
+            document.querySelectorAll("#varList .var-item").forEach(row => {
+                const inputs = row.querySelectorAll("input");
+                const k = inputs[0].value.trim();
+                const v = inputs[1].value.trim();
+                if (k) vars[k] = v;
+            });
+            return vars;
+        }
+
+        // ============================================================
+        //  预设加载
+        // ============================================================
+        function loadPreset(name) {
+            const p = PRESETS[name];
+            document.getElementById("scene").value = p.scene;
+            setVars(p.variables);
+        }
+
+        // ============================================================
+        //  渲染请求
+        // ============================================================
+        async function doRender() {
+            const url = document.getElementById("apiUrl").value.trim();
+            const scene = document.getElementById("scene").value.trim();
+            const full_url = url + scene;
+            const variables = getVars();
+            const statusEl = document.getElementById("status");
+            const outputEl = document.getElementById("output");
+
+            statusEl.innerHTML = '<span style="color:#facc15">请求中...</span>';
+            outputEl.textContent = "";
+
+            const start = performance.now();
+
+            try {
+                const resp = await fetch(full_url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ scene, variables }),
+                });
+
+                const ms = Math.round(performance.now() - start);
+                const data = await resp.json();
+
+                if (resp.ok) {
+                    statusEl.innerHTML = `<span class="ok">成功 ${ms}ms</span>`;
+                    outputEl.textContent = data.prompt;
+                } else {
+                    statusEl.innerHTML = `<span class="err">${resp.status}</span>`;
+                    outputEl.textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (e) {
+                statusEl.innerHTML = `<span class="err">请求失败</span>`;
+                outputEl.textContent = e.message + "\n\n确认服务已启动：uvicorn app:app --reload --port 8000";
+            }
+        }
+
+        // ============================================================
+        //  复制结果
+        // ============================================================
+        function copyResult() {
+            const text = document.getElementById("output").textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector(".btn-copy");
+                btn.textContent = "已复制";
+                setTimeout(() => btn.textContent = "复制结果", 1500);
+            });
+        }
+
+        // ============================================================
+        //  初始化：默认加载一个预设
+        // ============================================================
+        loadPreset("code_review");
+    </script>
+
+</body>
+
+</html>
