@@ -196,7 +196,7 @@
             position: absolute;
             top: 38px;
             right: 12px;
-            background:  linear-gradient(135deg, #5b6ef5, #8b5cf6);
+            background: linear-gradient(135deg, #5b6ef5, #8b5cf6);
             color: #FFF;
             font-size: 12px;
             padding: 6px 12px;
@@ -379,11 +379,42 @@
         // ============================================================
         function copyResult() {
             const text = document.getElementById("output").textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = document.querySelector(".btn-copy");
+            const btn = document.querySelector(".btn-copy");
+
+            // 封装修改按钮文字的逻辑
+            const showSuccess = () => {
                 btn.textContent = "已复制";
                 setTimeout(() => btn.textContent = "复制结果", 1500);
-            });
+            };
+
+            // 1. 优先使用现代 Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text)
+                    .then(showSuccess)
+                    .catch(err => console.error('复制失败:', err));
+            } else {
+                // 2. 兜底方案：使用传统的 textarea 模拟复制
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+
+                // 使 textarea 在页面上不可见
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                textArea.style.top = "0";
+                document.body.appendChild(textArea);
+
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) showSuccess();
+                } catch (err) {
+                    console.error('无法复制', err);
+                }
+
+                document.body.removeChild(textArea);
+            }
         }
 
         // ============================================================
