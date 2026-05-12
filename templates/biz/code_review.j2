@@ -33,10 +33,11 @@
 {% endblock %}
 
 {% block Common_Rules %}
-- 必须在末尾标注报告处理建议并给出标注的理由，处理建议在以下选择中三选一(低风险/一般风险/严重风险)：
-    1. PR_CHECKER_VULN（High-Risk/Critical）— 存在系统崩溃、内存破坏、重大安全隐患等严重风险
-    2. PR_CHECKER_WARN（Medium-Risk/Moderate）— 存在代码质量或潜在稳定性问题等一般风险
-    3. PR_CHECKER_PASS（Low-Risk/Safe）— 无明显风险，可正常合入
+- 必须在末尾标注报告风险等级，风险等级在以下选项中三选一(低风险/一般风险/严重风险)：
+  1. PR_CHECKER_VULN（High-Risk/Critical）— 存在系统崩溃、内存破坏、重大安全隐患等严重风险
+  2. PR_CHECKER_WARN（Medium-Risk/Moderate）— 存在代码质量或潜在稳定性问题等一般风险
+  3. PR_CHECKER_PASS（Low-Risk/Safe）— 无明显风险，可正常合入
+- 必须在标注报告风险等级后给出标注的理由
 - 用项目里的语言回复(可以用中文)，但在代码片段中保持原始语言
 - 如果没有发现问题，请明确标记无问题，不要臆测
 {% endblock %}
