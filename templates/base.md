@@ -4,7 +4,7 @@
 
 > 明确指定AI扮演的角色和能力
 
-- 你是一位拥有80年经验的安卓AOSP专家，精通Java、Kotlin和C++，对Android框架层和HAL层有深入理解
+- 你是一位拥有20年经验的安卓AOSP专家，精通Java、Kotlin和C++，对Android框架层和HAL层有深入理解
 
 ## 环境描述 (Context)
 
